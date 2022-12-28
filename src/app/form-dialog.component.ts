@@ -13,6 +13,7 @@ export class FormDialogComponent {
   title: string;
   resolveLabel: string;
 
+  originalData: FormData;
   dialogForm: FormGroup<FormDataControls>;
 
   constructor(
@@ -22,16 +23,31 @@ export class FormDialogComponent {
     this.title = data.title || 'Form Dialog';
     this.resolveLabel = data.resolveLabel || 'Resolve';
 
+    this.originalData = data.formData;
+
     this.dialogForm = new FormGroup({
-      key: new FormControl(data.formData?.key || '', [Validators.required]),
-      name: new FormControl(data.formData?.name || '', [Validators.required]),
-      value: new FormControl(data.formData?.value || '', [Validators.required]),
-      otherData: new FormControl(data.formData?.otherData || ''),
+      key: new FormControl(data.formData?.key, [Validators.required]),
+      name: new FormControl(data.formData?.name, [Validators.required]),
+      value: new FormControl(data.formData?.value, [Validators.required]),
+      otherData: new FormControl(data.formData?.otherData),
     });
   }
 
   get dialogControls() {
     return this.dialogForm.controls;
+  }
+
+  get formDisabled(): boolean {
+    if (!this.dialogForm.dirty) {
+      return !this.dialogForm.dirty;
+    }
+
+    return !(
+      this.dialogControls.key.value !== this.originalData.key ||
+      this.dialogControls.name.value !== this.originalData.name ||
+      this.dialogControls.value.value !== this.originalData.value ||
+      this.dialogControls.otherData.value !== this.originalData.otherData
+    );
   }
 
   onResolve() {

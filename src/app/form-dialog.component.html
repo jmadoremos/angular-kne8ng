@@ -34,7 +34,12 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-button color="primary" (click)="onResolve()">
+  <button
+    mat-button
+    color="primary"
+    (click)="onResolve()"
+    [disabled]="formDisabled"
+  >
     {{ resolveLabel }}
   </button>
   <button mat-button (click)="onCancel()">Cancel</button>

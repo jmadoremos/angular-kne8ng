@@ -58,8 +58,8 @@ export class PaginatedTableComponent implements OnChanges {
     );
 
     dialogRef.afterClosed().subscribe((result: FormData) => {
-      console.log(`Data returned: ${JSON.stringify(result)}`);
       if (result) {
+        console.log(`Data returned: ${JSON.stringify(result)}`);
         this.tableData[i].modified = result;
 
         if (this.tableData[i].state !== 'added') {
