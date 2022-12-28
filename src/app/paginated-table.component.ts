@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 
 import { FormData } from '../models/form-data';
-import { PaginatedTableData } from '../models/paginated-table-data';
+import { TrackedData } from '../models/tracked-data';
 import { StatefulData } from '../models/stateful-data';
 
 import { FormDialogComponent, FormDialogData } from './form-dialog.component';
@@ -11,15 +11,15 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
 @Component({
   selector: 'paginated-table',
   templateUrl: './paginated-table.component.html',
+  styleUrls: ['./paginated-table.component.css'],
 })
 export class PaginatedTableComponent implements OnChanges {
-  originalData: PaginatedTableData<FormData>[];
-  modifiedData: PaginatedTableData<FormData>[];
-
-  displayedColumns = ['nameValue', 'otherData', 'actions'];
+  tableData: TrackedData<FormData>[];
+  displayedColumns: string[];
 
   constructor(public dialog: MatDialog) {
-    this.onReset();
+    this.tableData = [];
+    this.displayedColumns = ['keyName', 'value', 'otherData', 'actions'];
   }
 
   @Input()
@@ -28,24 +28,23 @@ export class PaginatedTableComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.currentValue) {
-      this.onReset();
+    if (changes.data.currentValue) {
+      this.onReset(changes.data.currentValue);
     }
   }
 
-  onReset(data?: StatefulData<FormData>[]) {
-    this.originalData = [];
-    this.modifiedData = [];
+  onReset(data?: StatefulData<FormData>[] | TrackedData<FormData>[]) {
+    this.tableData = [];
 
     if (data) {
-      data.forEach((value) => {
-        this.originalData.push(value);
+      data.forEach((value, index) => {
+        this.tableData.push({ ...value, original: value.data });
       });
     }
   }
 
-  onUpdate(i) {
-    const toUpdate = this.originalData[i].modified ?? this.originalData[i].data;
+  onUpdate(i: number) {
+    const toUpdate = this.tableData[i].modified ?? this.tableData[i].original;
 
     let dialogRef = this.dialog.open<FormDialogComponent, FormDialogData>(
       FormDialogComponent,
@@ -61,26 +60,23 @@ export class PaginatedTableComponent implements OnChanges {
     dialogRef.afterClosed().subscribe((result: FormData) => {
       console.log(`Data returned: ${JSON.stringify(result)}`);
       if (result) {
-        this.originalData[i].modified = result;
-        if (this.originalData[i].state !== 'added') {
-          this.originalData[i].state = 'altered';
+        this.tableData[i].modified = result;
+
+        if (this.tableData[i].state !== 'added') {
+          this.tableData[i].state = 'altered';
         }
       }
     });
   }
 
-  onRevert(i) {
-    console.log(
-      `Reverting item ${this.originalData[i].data.name}: ${this.originalData[i].data.value} (index: ${i})`
-    );
-    delete this.originalData[i].modified;
-    this.originalData[i].state = 'original';
+  onRevert(i: number) {
+    console.log(`Reverting item: ${this.tableData[i].data.key}`);
+    delete this.tableData[i].modified;
+    this.tableData[i].state = 'original';
   }
 
-  onRemove(i) {
-    console.log(
-      `Removing item ${this.originalData[i].data.name}: ${this.originalData[i].data.value} (index: ${i})`
-    );
-    this.originalData.splice(i, 1);
+  onRemove(i: number) {
+    console.log(`Removing item: ${this.tableData[i].data.key}`);
+    this.tableData.splice(i, 1);
   }
 }

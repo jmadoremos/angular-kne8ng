@@ -1,32 +1,57 @@
-<table mat-table [dataSource]="originalData">
-  <ng-container matColumnDef="nameValue">
-    <th mat-header-cell *matHeaderCellDef>Name-Value</th>
+<table mat-table [dataSource]="tableData">
+  <ng-container matColumnDef="keyName">
+    <th mat-header-cell *matHeaderCellDef>Entity</th>
     <td mat-cell *matCellDef="let row">
       {{
-        (row.modified?.name || row.data.name) +
+        (row.modified?.key || row.original.key) +
           ': ' +
-          (row.modified?.value || row.data.value)
+          (row.modified?.name || row.original.name)
       }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="value">
+    <th mat-header-cell *matHeaderCellDef>Value</th>
+    <td mat-cell *matCellDef="let row">
+      {{ row.modified?.value || row.original.value }}
     </td>
   </ng-container>
 
   <ng-container matColumnDef="otherData">
     <th mat-header-cell *matHeaderCellDef>Other Data</th>
     <td mat-cell *matCellDef="let row">
-      {{ row.modified?.otherData || row.data.otherData }}
+      {{ row.modified?.otherData || row.original.otherData }}
     </td>
   </ng-container>
 
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let row; let i = index">
-      <button mat-button (click)="onUpdate(i)">Update</button>
-      <button mat-button *ngIf="row.state === 'added'" (click)="onRemove(i)">
-        Remove
-      </button>
-      <button mat-button *ngIf="row.state === 'altered'" (click)="onRevert(i)">
-        Revert
-      </button>
+      <div class="flex-container">
+        <div class="button-container">
+          <button mat-mini-fab (click)="onUpdate(i)">
+            <mat-icon>update</mat-icon>
+          </button>
+        </div>
+        <div class="button-container">
+          <button
+            mat-mini-fab
+            *ngIf="row.state === 'added'"
+            (click)="onRemove(i)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        <div class="button-container">
+          <button
+            mat-mini-fab
+            *ngIf="row.state === 'altered'"
+            (click)="onRevert(i)"
+          >
+            <mat-icon>undo</mat-icon>
+          </button>
+        </div>
+      </div>
     </td>
   </ng-container>
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { FormData } from '../models/form-data';
@@ -11,22 +11,31 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   name = 'Angular';
   tableData: StatefulData<FormData>[];
 
   constructor(public dialog: MatDialog) {
     this.tableData = [];
-    for (let i = 1; i <= 5; i++) {
-      this.tableData.push({
-        state: 'original',
-        data: {
-          name: i.toString(),
-          value: 'Sample',
-          otherData: `Other Data ${i}`,
-        },
+  }
+
+  ngOnInit() {
+    this.fetch().forEach((value) => {
+      this.tableData.push({ state: 'original', data: value });
+    });
+  }
+
+  private fetch(): FormData[] {
+    const arr: FormData[] = [];
+    for (let i = 0; i < 5; i++) {
+      arr.push({
+        key: (i + 1).toString().padStart(5, '0'),
+        name: String.fromCharCode(97 + i),
+        value: 'Sample',
+        otherData: `Other data #${i + 1}`,
       });
     }
+    return arr;
   }
 
   onAdd() {
@@ -41,8 +50,8 @@ export class AppComponent {
     );
 
     dialogRef.afterClosed().subscribe((result: FormData) => {
-      console.log(`Data returned: ${JSON.stringify(result)}`);
       if (result) {
+        console.log(`Adding record: ${JSON.stringify(result)}`);
         const newData: StatefulData<FormData> = {
           state: 'added',
           data: result,

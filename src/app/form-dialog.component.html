@@ -1,25 +1,41 @@
 <h2 mat-dialog-title>{{ title }}</h2>
+
 <mat-dialog-content>
-  <p>
+  <form [formGroup]="dialogForm" (ngSubmit)="onResolve()">
+    <mat-form-field appearance="fill">
+      <mat-label>Key</mat-label>
+      <input matInput formControlName="key" required />
+      <mat-error *ngIf="dialogControls.key.hasError('required')">
+        Key is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+
     <mat-form-field appearance="fill">
       <mat-label>Name</mat-label>
-      <input matInput [(ngModel)]="formData.name" type="text" required />
+      <input matInput formControlName="name" required />
+      <mat-error *ngIf="dialogControls.name.hasError('required')">
+        Name is <strong>required</strong>
+      </mat-error>
     </mat-form-field>
-  </p>
-  <p>
+
     <mat-form-field appearance="fill">
       <mat-label>Value</mat-label>
-      <input matInput [(ngModel)]="formData.value" type="text" required />
+      <input matInput formControlName="value" required />
+      <mat-error *ngIf="dialogControls.value.hasError('required')">
+        Value is <strong>required</strong>
+      </mat-error>
     </mat-form-field>
-  </p>
-  <p>
+
     <mat-form-field appearance="fill">
       <mat-label>Other data</mat-label>
-      <input matInput [(ngModel)]="formData.otherData" type="text" />
+      <input matInput formControlName="otherData" />
     </mat-form-field>
-  </p>
+  </form>
 </mat-dialog-content>
+
 <mat-dialog-actions>
-  <button mat-button (click)="onResolve()">{{ resolveLabel }}</button>
+  <button mat-button color="primary" (click)="onResolve()">
+    {{ resolveLabel }}
+  </button>
   <button mat-button (click)="onCancel()">Cancel</button>
 </mat-dialog-actions>

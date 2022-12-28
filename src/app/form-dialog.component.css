@@ -1,5 +1,3 @@
-label,
-input,
-select {
-  width: 90%;
+mat-dialog-actions button {
+  margin-right: 8px;
 }

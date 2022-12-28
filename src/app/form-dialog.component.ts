@@ -1,7 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
 
-import { FormData } from '../models/form-data';
+import { FormData, FormDataControls } from '../models/form-data';
 
 @Component({
   selector: 'form-dialog',
@@ -9,45 +10,39 @@ import { FormData } from '../models/form-data';
   styleUrls: ['./form-dialog.component.css'],
 })
 export class FormDialogComponent {
-  public title: string;
-  public resolveLabel: string;
-  public formData: FormData;
+  title: string;
+  resolveLabel: string;
+
+  dialogForm: FormGroup<FormDataControls>;
 
   constructor(
-    public dialogRef: MatDialogRef<FormDialogComponent, FormData>,
+    public dialogRef: MatDialogRef<FormDialogComponent, Partial<FormData>>,
     @Inject(MAT_DIALOG_DATA) public data: FormDialogData
   ) {
     this.title = data.title || 'Form Dialog';
     this.resolveLabel = data.resolveLabel || 'Resolve';
 
-    this.formData = data.formData || {
-      name: '',
-      value: '',
-      otherData: '',
-    };
-  }
-
-  public onResolve() {
-    Object.keys(this.formData).forEach((key) => {
-      if (typeof this.formData[key] === 'string') {
-        this.formData[key] = this.formData[key].trim();
-      }
+    this.dialogForm = new FormGroup({
+      key: new FormControl(data.formData?.key || '', [Validators.required]),
+      name: new FormControl(data.formData?.name || '', [Validators.required]),
+      value: new FormControl(data.formData?.value || '', [Validators.required]),
+      otherData: new FormControl(data.formData?.otherData || ''),
     });
-
-    if (!this.formData.name) {
-      alert(`name is required`);
-      return;
-    }
-
-    if (!this.formData.value) {
-      alert(`value is required`);
-      return;
-    }
-
-    this.dialogRef.close(this.formData);
   }
 
-  public onCancel() {
+  get dialogControls() {
+    return this.dialogForm.controls;
+  }
+
+  onResolve() {
+    if (this.dialogForm.invalid) {
+      this.dialogForm.markAllAsTouched();
+      return;
+    }
+    this.dialogRef.close(this.dialogForm.value);
+  }
+
+  onCancel() {
     this.dialogRef.close();
   }
 }
