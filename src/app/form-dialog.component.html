@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<mat-dialog-content>
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="formData.name" type="text" required />
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Value</mat-label>
+      <input matInput [(ngModel)]="formData.value" type="text" required />
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Other data</mat-label>
+      <input matInput [(ngModel)]="formData.otherData" type="text" />
+    </mat-form-field>
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onResolve()">{{ resolveLabel }}</button>
+  <button mat-button (click)="onCancel()">Cancel</button>
+</mat-dialog-actions>
