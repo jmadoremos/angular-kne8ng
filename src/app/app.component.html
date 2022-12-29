@@ -2,6 +2,11 @@
 
 <button mat-raised-button (click)="onAdd()" color="accent">Add</button>
 
-<paginated-table [dataSource]="tableData" (update)="onDataChange($event)">
+<paginated-table
+  [dataSource]="tableData"
+  (update)="onUpdate($event)"
+  (revert)="onRevert($event)"
+  (remove)="onRemove($event)"
+>
   Paginated table
 </paginated-table>

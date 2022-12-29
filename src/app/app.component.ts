@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { FormData } from '../models/form-data';
+import { IndexedData } from '../models/indexed-data';
 import { StatefulData } from '../models/stateful-data';
+import { TrackedData } from '../models/tracked-data';
 
 import { FormDialogComponent, FormDialogData } from './form-dialog.component';
 
@@ -13,7 +15,7 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
 })
 export class AppComponent {
   name = 'Angular';
-  tableData: StatefulData<FormData>[];
+  tableData: TrackedData<FormData>[];
 
   constructor(private dialog: MatDialog) {
     this.tableData = [];
@@ -24,10 +26,10 @@ export class AppComponent {
 
   private fetch(): FormData[] {
     const arr: FormData[] = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       arr.push({
         key: i.toString().padStart(5, '0'),
-        name: String.fromCharCode(97 + (i % 25)),
+        name: String.fromCharCode(96 + (i % 25)),
         value: 'Sample',
         otherData: `Other data #${i}`,
       });
@@ -60,8 +62,34 @@ export class AppComponent {
     });
   }
 
-  onDataChange(event) {
-    console.log(`onDataChange event called`);
-    this.tableData = event;
+  onUpdate(event: IndexedData<FormData>) {
+    console.log(
+      `Updating item: ${JSON.stringify(this.tableData[event.index].data.key)}`
+    );
+    console.log(`Updated data: ${JSON.stringify(event.data)}`);
+
+    this.tableData[event.index].modified = event.data;
+    if (this.tableData[event.index].state !== 'added') {
+      this.tableData[event.index].state = 'altered';
+    }
+  }
+
+  onRevert(event: IndexedData<never>) {
+    console.log(
+      `Reverting item: ${JSON.stringify(this.tableData[event.index].data.key)}`
+    );
+
+    delete this.tableData[event.index].modified;
+    this.tableData[event.index].state = 'original';
+  }
+
+  onRemove(event: IndexedData<never>) {
+    console.log(
+      `Removing item: ${JSON.stringify(this.tableData[event.index].data.key)}`
+    );
+    this.tableData = [
+      ...this.tableData.slice(0, event.index),
+      ...this.tableData.slice(event.index + 1),
+    ];
   }
 }
