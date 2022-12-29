@@ -27,7 +27,7 @@ export class AppComponent {
     for (let i = 1; i <= 5; i++) {
       arr.push({
         key: i.toString().padStart(5, '0'),
-        name: String.fromCharCode(96 + i),
+        name: String.fromCharCode(97 + (i % 25)),
         value: 'Sample',
         otherData: `Other data #${i}`,
       });
@@ -58,5 +58,10 @@ export class AppComponent {
         ];
       }
     });
+  }
+
+  onDataChange(event) {
+    console.log(`onDataChange event called`);
+    this.tableData = event;
   }
 }

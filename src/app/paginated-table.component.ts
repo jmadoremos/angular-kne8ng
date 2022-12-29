@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 
 import { FormData } from '../models/form-data';
 import { TrackedData } from '../models/tracked-data';
@@ -15,18 +16,34 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
 export class PaginatedTableComponent {
   private _tableData: TrackedData<FormData>[];
   displayedColumns: string[];
+  @Output() change: EventEmitter<StatefulData<FormData>[]>;
+
+  rowLength: number;
+  pageSize: number;
+  pageSizeOptions: number[];
+  pageIndex: number;
 
   constructor(private dialog: MatDialog) {
     this.displayedColumns = ['keyName', 'value', 'otherData', 'actions'];
+    this.change = new EventEmitter();
+
+    this.rowLength = 0;
+    this.pageSize = 5;
+    this.pageSizeOptions = [5, 10, 25];
+    this.pageIndex = 0;
   }
 
   @Input()
   set dataSource(val: StatefulData<FormData>[]) {
-    this._tableData = val;
+    this._tableData = Object.assign([], val);
+    this.rowLength = this._tableData.length;
   }
 
   get dataSource(): TrackedData<FormData>[] {
-    return this._tableData;
+    return this._tableData.slice(
+      this.pageIndex * this.pageSize,
+      this.pageSize * (this.pageIndex + 1)
+    );
   }
 
   onUpdate(i: number) {
@@ -63,6 +80,13 @@ export class PaginatedTableComponent {
 
   onRemove(i: number) {
     console.log(`Removing item: ${this.dataSource[i].data.key}`);
-    this.dataSource.splice(i, 2);
+    this.dataSource.splice(i, 1);
+    this.rowLength--;
+    this.pageIndex = this.rowLength / this.pageSize - 1;
+  }
+
+  onChangePage(e: PageEvent) {
+    this.pageIndex = this.pageSize === e.pageSize ? e.pageIndex : 0;
+    this.pageSize = e.pageSize;
   }
 }
