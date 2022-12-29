@@ -42,12 +42,14 @@ export class FormDialogComponent {
       return !this.dialogForm.dirty;
     }
 
-    return !(
-      this.dialogControls.key.value !== this.originalData.key ||
-      this.dialogControls.name.value !== this.originalData.name ||
-      this.dialogControls.value.value !== this.originalData.value ||
-      this.dialogControls.otherData.value !== this.originalData.otherData
-    );
+    if (this.originalData) {
+      return !(
+        this.dialogControls.key.value !== this.originalData.key ||
+        this.dialogControls.name.value !== this.originalData.name ||
+        this.dialogControls.value.value !== this.originalData.value ||
+        this.dialogControls.otherData.value !== this.originalData.otherData
+      );
+    }
   }
 
   onResolve() {
