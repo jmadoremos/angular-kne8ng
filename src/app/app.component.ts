@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { FormData } from '../models/form-data';
 import { IndexedData } from '../models/indexed-data';
-import { StatefulData } from '../models/stateful-data';
 import { TrackedData } from '../models/tracked-data';
 
 import { FormDialogComponent, FormDialogData } from './form-dialog.component';
@@ -26,7 +25,7 @@ export class AppComponent {
 
   private fetch(): FormData[] {
     const arr: FormData[] = [];
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 500000; i++) {
       arr.push({
         key: i.toString().padStart(5, '0'),
         name: String.fromCharCode(96 + (i % 25)),

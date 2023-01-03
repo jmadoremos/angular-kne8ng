@@ -1,5 +1,5 @@
-import { StatefulData } from './stateful-data';
-
-export interface TrackedData<T> extends StatefulData<T> {
+export interface TrackedData<T> {
+  state: 'original' | 'added' | 'altered';
+  data: T;
   modified?: T;
 }

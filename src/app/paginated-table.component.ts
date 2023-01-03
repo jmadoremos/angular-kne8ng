@@ -5,7 +5,6 @@ import { PageEvent } from '@angular/material/paginator';
 import { FormData } from '../models/form-data';
 import { IndexedData } from '../models/indexed-data';
 import { TrackedData } from '../models/tracked-data';
-import { StatefulData } from '../models/stateful-data';
 
 import { FormDialogComponent, FormDialogData } from './form-dialog.component';
 
@@ -41,7 +40,7 @@ export class PaginatedTableComponent {
   }
 
   @Input()
-  set dataSource(val: StatefulData<FormData>[]) {
+  set dataSource(val: TrackedData<FormData>[]) {
     this._tableData = Object.assign([], val);
     this.rowLength = this._tableData.length;
 
