@@ -16,45 +16,30 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
   styleUrls: ['./paginated-table.component.css'],
 })
 export class PaginatedTableComponent {
-  private _tableData: TrackedData<FormData>[];
-  private _filteredData: TrackedData<FormData>[];
-  private _tableColumns: PaginatedTableColumns[];
-  private _displayedColumns: string[];
+  private _tableData: TrackedData<FormData>[] = [];
+  private _filteredData: TrackedData<FormData>[] = [];
+  private _tableColumns: PaginatedTableColumns[] = [];
+  private _displayedColumns: string[] = ['actions'];
 
-  @Output() add: EventEmitter<IndexedData<FormData>>;
-  @Output() update: EventEmitter<IndexedData<FormData>>;
-  @Output() revert: EventEmitter<IndexedData<never>>;
-  @Output() remove: EventEmitter<IndexedData<never>>;
+  @Output() add: EventEmitter<IndexedData<FormData>> = new EventEmitter();
+  @Output() update: EventEmitter<IndexedData<FormData>> = new EventEmitter();
+  @Output() revert: EventEmitter<IndexedData<never>> = new EventEmitter();
+  @Output() remove: EventEmitter<IndexedData<never>> = new EventEmitter();
 
-  readonly pageSizeOptions: number[];
-  rowLength: number;
-  pageSize: number;
-  pageIndex: number;
+  readonly pageSizeOptions: number[] = [5, 10, 25];
+  pageSize: number = 5;
+  rowLength: number = 0;
+  pageIndex: number = 0;
 
-  readonly filterMinLen: number;
-  filterControl: FormControl<string>;
-  private _filterTimeout: any;
-  private readonly _filterDelayMs: number;
+  readonly filterMinLen: number = 3;
+  filterControl: FormControl<string> = new FormControl(
+    '',
+    Validators.minLength(this.filterMinLen)
+  );
+  private _filterTimeout: number = null;
+  private readonly _filterDelayMs: number = 500;
 
-  constructor(private dialog: MatDialog) {
-    this.add = new EventEmitter();
-    this.update = new EventEmitter();
-    this.revert = new EventEmitter();
-    this.remove = new EventEmitter();
-
-    this.pageSizeOptions = [5, 10, 25];
-    this.rowLength = 0;
-    this.pageSize = 5;
-    this.pageIndex = 0;
-
-    this.filterMinLen = 3;
-    this.filterControl = new FormControl(
-      '',
-      Validators.minLength(this.filterMinLen)
-    );
-    this._filterTimeout = null;
-    this._filterDelayMs = 500;
-  }
+  constructor(private dialog: MatDialog) {}
 
   @Input()
   set dataSource(val: TrackedData<FormData>[]) {

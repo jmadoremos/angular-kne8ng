@@ -12,36 +12,32 @@ import { TrackedData } from '../models/tracked-data';
 })
 export class AppComponent {
   readonly name = 'Angular';
-  readonly tableColumns: PaginatedTableColumns[];
-  readonly tableDisplayedColumns: string[];
-  tableData: TrackedData<FormData>[];
+  readonly tableColumns: PaginatedTableColumns[] = [
+    {
+      colKey: 'keyValue',
+      colLabel: 'Key value',
+      rowKeys: ['key', 'value'],
+      displayed: true,
+    },
+    {
+      colKey: 'name',
+      colLabel: 'Name',
+      rowKeys: ['name'],
+      displayed: true,
+    },
+    {
+      colKey: 'otherData',
+      colLabel: 'Other data',
+      rowKeys: ['otherData'],
+      displayed: false,
+    },
+  ];
+  tableData: TrackedData<FormData>[] = [];
 
   constructor() {
-    this.tableData = [];
     this.fetch().forEach((value) => {
       this.tableData.push({ state: 'original', data: value });
     });
-
-    this.tableColumns = [
-      {
-        colKey: 'keyValue',
-        colLabel: 'Key value',
-        rowKeys: ['key', 'value'],
-        displayed: true,
-      },
-      {
-        colKey: 'name',
-        colLabel: 'Name',
-        rowKeys: ['name'],
-        displayed: true,
-      },
-      {
-        colKey: 'otherData',
-        colLabel: 'Other data',
-        rowKeys: ['otherData'],
-        displayed: false,
-      },
-    ];
   }
 
   private fetch(): FormData[] {

@@ -10,27 +10,32 @@ import { FormData, FormDataControls } from '../models/form-data';
   styleUrls: ['./form-dialog.component.css'],
 })
 export class FormDialogComponent {
-  title: string;
-  resolveLabel: string;
+  title: string = 'Form Dialog';
+  resolveLabel: string = 'Resolve';
+  originalData: FormData = null;
 
-  originalData: FormData;
-  dialogForm: FormGroup<FormDataControls>;
+  dialogForm: FormGroup<FormDataControls> = new FormGroup({
+    key: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
+    value: new FormControl('', [Validators.required]),
+    otherData: new FormControl(''),
+  });
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent, Partial<FormData>>,
     @Inject(MAT_DIALOG_DATA) public data: FormDialogData
   ) {
-    this.title = data.title || 'Form Dialog';
-    this.resolveLabel = data.resolveLabel || 'Resolve';
+    this.title = data.title ?? this.title;
+    this.resolveLabel = data.resolveLabel ?? this.resolveLabel;
 
-    this.originalData = data.formData;
+    if (data.formData) {
+      this.originalData = data.formData;
 
-    this.dialogForm = new FormGroup({
-      key: new FormControl(data.formData?.key, [Validators.required]),
-      name: new FormControl(data.formData?.name, [Validators.required]),
-      value: new FormControl(data.formData?.value, [Validators.required]),
-      otherData: new FormControl(data.formData?.otherData),
-    });
+      this.dialogControls.key.setValue(data.formData?.key);
+      this.dialogControls.name.setValue(data.formData?.name);
+      this.dialogControls.value.setValue(data.formData?.value);
+      this.dialogControls.otherData.setValue(data.formData?.otherData);
+    }
   }
 
   get dialogControls() {
