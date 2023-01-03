@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
@@ -27,6 +28,7 @@ import { PaginatedTableComponent } from './paginated-table.component';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
+    MatTooltipModule,
     BrowserAnimationsModule,
   ],
   declarations: [

@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 
@@ -30,6 +31,11 @@ export class PaginatedTableComponent {
   pageSize: number;
   pageIndex: number;
 
+  readonly filterMinLen: number;
+  filterControl: FormControl<string>;
+  private _filterTimeout: any;
+  private readonly _filterDelayMs: number;
+
   constructor(private dialog: MatDialog) {
     this.add = new EventEmitter();
     this.update = new EventEmitter();
@@ -40,6 +46,14 @@ export class PaginatedTableComponent {
     this.rowLength = 0;
     this.pageSize = 5;
     this.pageIndex = 0;
+
+    this.filterMinLen = 3;
+    this.filterControl = new FormControl(
+      '',
+      Validators.minLength(this.filterMinLen)
+    );
+    this._filterTimeout = null;
+    this._filterDelayMs = 500;
   }
 
   @Input()
@@ -83,11 +97,40 @@ export class PaginatedTableComponent {
     return Math.ceil(this.rowLength / this.pageSize);
   }
 
-  private updateFilteredData() {
-    this._filteredData = this._tableData.slice(
+  private updateFilteredData(filter = this.filterControl.value) {
+    let tmp: TrackedData<FormData>[] = Object.assign([], this._tableData);
+
+    // Apply filter
+    if (filter && filter.length >= this.filterMinLen) {
+      tmp = tmp.filter(
+        (value) =>
+          value.data.key.startsWith(filter) || value.data.value.includes(filter)
+      );
+    }
+
+    // Reflect filtered data with pagination
+    this._filteredData = tmp.slice(
       this.pageIndex * this.pageSize,
       this.pageSize * (this.pageIndex + 1)
     );
+
+    // Update row length
+    this.rowLength = tmp.length;
+  }
+
+  onFilterChange() {
+    clearTimeout(this._filterTimeout);
+    this._filterTimeout = setTimeout(() => {
+      // Reset to first page
+      this.pageIndex = 0;
+      // Update table
+      this.updateFilteredData(this.filterControl.value);
+    }, this._filterDelayMs);
+  }
+
+  onFilterReset() {
+    this.filterControl.setValue('');
+    this.updateFilteredData();
   }
 
   onAdd() {
