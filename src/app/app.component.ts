@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 
 import { FormData } from '../models/form-data';
 import { IndexedData } from '../models/indexed-data';
 import { PaginatedTableColumns } from '../models/table-column';
 import { TrackedData } from '../models/tracked-data';
-
-import { FormDialogComponent, FormDialogData } from './form-dialog.component';
 
 @Component({
   selector: 'my-app',
@@ -19,7 +16,7 @@ export class AppComponent {
   readonly tableDisplayedColumns: string[];
   tableData: TrackedData<FormData>[];
 
-  constructor(private dialog: MatDialog) {
+  constructor() {
     this.tableData = [];
     this.fetch().forEach((value) => {
       this.tableData.push({ state: 'original', data: value });
@@ -60,36 +57,20 @@ export class AppComponent {
     return arr;
   }
 
-  onAdd() {
-    const dialogRef = this.dialog.open<FormDialogComponent, FormDialogData>(
-      FormDialogComponent,
-      {
-        data: {
-          title: 'Add form',
-          resolveLabel: 'Add',
-        },
-      }
-    );
+  onAdd(event: IndexedData<FormData>) {
+    console.log(`Adding record: ${JSON.stringify(event.data)}`);
 
-    dialogRef.afterClosed().subscribe((result: FormData) => {
-      if (result) {
-        console.log(`Adding record: ${JSON.stringify(result)}`);
-        this.tableData = [
-          ...this.tableData,
-          {
-            state: 'added',
-            data: result,
-          },
-        ];
-      }
-    });
+    this.tableData = [
+      ...this.tableData,
+      {
+        state: 'added',
+        data: event.data,
+      },
+    ];
   }
 
   onUpdate(event: IndexedData<FormData>) {
-    console.log(
-      `Updating item: ${JSON.stringify(this.tableData[event.index].data.key)}`
-    );
-    console.log(`Updated data: ${JSON.stringify(event.data)}`);
+    console.log(`Updating data: ${JSON.stringify(event.data)}`);
 
     this.tableData[event.index].modified = event.data;
     if (this.tableData[event.index].state !== 'added') {
@@ -108,8 +89,9 @@ export class AppComponent {
 
   onRemove(event: IndexedData<never>) {
     console.log(
-      `Removing item: ${JSON.stringify(this.tableData[event.index].data.key)}`
+      `Removing item: ${JSON.stringify(this.tableData[event.index].data)}`
     );
+
     this.tableData = [
       ...this.tableData.slice(0, event.index),
       ...this.tableData.slice(event.index + 1),

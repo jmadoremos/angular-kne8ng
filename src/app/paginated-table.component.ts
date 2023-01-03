@@ -20,6 +20,7 @@ export class PaginatedTableComponent {
   private _tableColumns: PaginatedTableColumns[];
   private _displayedColumns: string[];
 
+  @Output() add: EventEmitter<IndexedData<FormData>>;
   @Output() update: EventEmitter<IndexedData<FormData>>;
   @Output() revert: EventEmitter<IndexedData<never>>;
   @Output() remove: EventEmitter<IndexedData<never>>;
@@ -30,6 +31,7 @@ export class PaginatedTableComponent {
   pageIndex: number;
 
   constructor(private dialog: MatDialog) {
+    this.add = new EventEmitter();
     this.update = new EventEmitter();
     this.revert = new EventEmitter();
     this.remove = new EventEmitter();
@@ -44,6 +46,13 @@ export class PaginatedTableComponent {
   set dataSource(val: TrackedData<FormData>[]) {
     this._tableData = Object.assign([], val);
     this.rowLength = this._tableData.length;
+
+    if (this.pageIndex >= this.maxPageIndex) {
+      this.pageIndex--;
+      if (this.pageIndex < 0) {
+        this.pageIndex = 0;
+      }
+    }
 
     this.updateFilteredData();
   }
@@ -79,6 +88,29 @@ export class PaginatedTableComponent {
       this.pageIndex * this.pageSize,
       this.pageSize * (this.pageIndex + 1)
     );
+  }
+
+  onAdd() {
+    const dialogRef = this.dialog.open<FormDialogComponent, FormDialogData>(
+      FormDialogComponent,
+      {
+        data: {
+          title: 'Add form',
+          resolveLabel: 'Add',
+        },
+      }
+    );
+
+    dialogRef.afterClosed().subscribe((result: FormData) => {
+      if (result) {
+        const d: IndexedData<FormData> = {
+          index: this._tableData.length,
+          data: result,
+        };
+
+        this.add.emit(d);
+      }
+    });
   }
 
   onUpdate(i: number) {

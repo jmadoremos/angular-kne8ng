@@ -1,10 +1,9 @@
 <hello name="{{ name }}"></hello>
 
-<button mat-raised-button (click)="onAdd()" color="accent">Add</button>
-
 <paginated-table
   [dataSource]="tableData"
   [tableColumns]="tableColumns"
+  (add)="onAdd($event)"
   (update)="onUpdate($event)"
   (revert)="onRevert($event)"
   (remove)="onRemove($event)"
