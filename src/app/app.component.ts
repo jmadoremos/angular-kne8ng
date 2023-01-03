@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { FormData } from '../models/form-data';
 import { IndexedData } from '../models/indexed-data';
+import { PaginatedTableColumns } from '../models/table-column';
 import { TrackedData } from '../models/tracked-data';
 
 import { FormDialogComponent, FormDialogData } from './form-dialog.component';
@@ -13,7 +14,9 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  name = 'Angular';
+  readonly name = 'Angular';
+  readonly tableColumns: PaginatedTableColumns[];
+  readonly tableDisplayedColumns: string[];
   tableData: TrackedData<FormData>[];
 
   constructor(private dialog: MatDialog) {
@@ -21,6 +24,27 @@ export class AppComponent {
     this.fetch().forEach((value) => {
       this.tableData.push({ state: 'original', data: value });
     });
+
+    this.tableColumns = [
+      {
+        colKey: 'keyValue',
+        colLabel: 'Key value',
+        rowKeys: ['key', 'value'],
+        displayed: true,
+      },
+      {
+        colKey: 'name',
+        colLabel: 'Name',
+        rowKeys: ['name'],
+        displayed: true,
+      },
+      {
+        colKey: 'otherData',
+        colLabel: 'Other data',
+        rowKeys: ['otherData'],
+        displayed: false,
+      },
+    ];
   }
 
   private fetch(): FormData[] {

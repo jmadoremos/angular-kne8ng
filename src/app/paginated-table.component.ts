@@ -4,6 +4,7 @@ import { PageEvent } from '@angular/material/paginator';
 
 import { FormData } from '../models/form-data';
 import { IndexedData } from '../models/indexed-data';
+import { PaginatedTableColumns } from '../models/table-column';
 import { TrackedData } from '../models/tracked-data';
 
 import { FormDialogComponent, FormDialogData } from './form-dialog.component';
@@ -16,12 +17,13 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
 export class PaginatedTableComponent {
   private _tableData: TrackedData<FormData>[];
   private _filteredData: TrackedData<FormData>[];
+  private _tableColumns: PaginatedTableColumns[];
+  private _displayedColumns: string[];
 
   @Output() update: EventEmitter<IndexedData<FormData>>;
   @Output() revert: EventEmitter<IndexedData<never>>;
   @Output() remove: EventEmitter<IndexedData<never>>;
 
-  readonly displayedColumns: string[];
   readonly pageSizeOptions: number[];
   rowLength: number;
   pageSize: number;
@@ -32,7 +34,6 @@ export class PaginatedTableComponent {
     this.revert = new EventEmitter();
     this.remove = new EventEmitter();
 
-    this.displayedColumns = ['keyName', 'value', 'otherData', 'actions'];
     this.pageSizeOptions = [5, 10, 25];
     this.rowLength = 0;
     this.pageSize = 5;
@@ -49,6 +50,24 @@ export class PaginatedTableComponent {
 
   get dataSource(): TrackedData<FormData>[] {
     return this._filteredData;
+  }
+
+  @Input()
+  set tableColumns(val: PaginatedTableColumns[]) {
+    this._tableColumns = val;
+
+    this._displayedColumns = val
+      .filter((value) => value.displayed)
+      .map((value) => value.colKey);
+    this._displayedColumns.push('actions');
+  }
+
+  get tableColumns(): PaginatedTableColumns[] {
+    return this._tableColumns;
+  }
+
+  get displayColumns(): string[] {
+    return this._displayedColumns;
   }
 
   get maxPageIndex(): number {

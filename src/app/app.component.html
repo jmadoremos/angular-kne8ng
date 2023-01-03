@@ -4,6 +4,7 @@
 
 <paginated-table
   [dataSource]="tableData"
+  [tableColumns]="tableColumns"
   (update)="onUpdate($event)"
   (revert)="onRevert($event)"
   (remove)="onRemove($event)"
