@@ -16,28 +16,35 @@ import { FormDialogComponent, FormDialogData } from './form-dialog.component';
   styleUrls: ['./paginated-table.component.css'],
 })
 export class PaginatedTableComponent {
+  readonly PAGE_SIZE_OPTIONS: number[] = [5, 10, 25];
+  readonly FILTER_MIN_LEN: number = 3;
+  private readonly FILTER_DELAY_MS: number = 500;
+
   private _tableData: TrackedData<FormData>[] = [];
   private _filteredData: TrackedData<FormData>[] = [];
   private _tableColumns: PaginatedTableColumns[] = [];
   private _displayedColumns: string[] = ['actions'];
+  private _filterTimeout: number = null;
 
-  @Output() add: EventEmitter<IndexedData<FormData>> = new EventEmitter();
-  @Output() update: EventEmitter<IndexedData<FormData>> = new EventEmitter();
-  @Output() revert: EventEmitter<IndexedData<never>> = new EventEmitter();
-  @Output() remove: EventEmitter<IndexedData<never>> = new EventEmitter();
-
-  readonly pageSizeOptions: number[] = [5, 10, 25];
   pageSize: number = 5;
   rowLength: number = 0;
   pageIndex: number = 0;
-
-  readonly filterMinLen: number = 3;
   filterControl: FormControl<string> = new FormControl(
     '',
-    Validators.minLength(this.filterMinLen)
+    Validators.minLength(this.FILTER_MIN_LEN)
   );
-  private _filterTimeout: number = null;
-  private readonly _filterDelayMs: number = 500;
+
+  @Output()
+  private add: EventEmitter<IndexedData<FormData>> = new EventEmitter();
+
+  @Output()
+  private update: EventEmitter<IndexedData<FormData>> = new EventEmitter();
+
+  @Output()
+  private revert: EventEmitter<IndexedData<never>> = new EventEmitter();
+
+  @Output()
+  private remove: EventEmitter<IndexedData<never>> = new EventEmitter();
 
   constructor(private dialog: MatDialog) {}
 
@@ -56,10 +63,6 @@ export class PaginatedTableComponent {
     this.updateFilteredData();
   }
 
-  get dataSource(): TrackedData<FormData>[] {
-    return this._filteredData;
-  }
-
   @Input()
   set tableColumns(val: PaginatedTableColumns[]) {
     this._tableColumns = val;
@@ -68,6 +71,10 @@ export class PaginatedTableComponent {
       .filter((value) => value.displayed)
       .map((value) => value.colKey);
     this._displayedColumns.push('actions');
+  }
+
+  get dataSource(): TrackedData<FormData>[] {
+    return this._filteredData;
   }
 
   get tableColumns(): PaginatedTableColumns[] {
@@ -86,7 +93,7 @@ export class PaginatedTableComponent {
     let tmp: TrackedData<FormData>[] = Object.assign([], this._tableData);
 
     // Apply filter
-    if (filter && filter.length >= this.filterMinLen) {
+    if (filter && filter.length >= this.FILTER_MIN_LEN) {
       tmp = tmp.filter(
         (value) =>
           value.data.key.startsWith(filter) || value.data.value.includes(filter)
@@ -110,7 +117,7 @@ export class PaginatedTableComponent {
       this.pageIndex = 0;
       // Update table
       this.updateFilteredData(this.filterControl.value);
-    }, this._filterDelayMs);
+    }, this.FILTER_DELAY_MS);
   }
 
   onFilterReset() {

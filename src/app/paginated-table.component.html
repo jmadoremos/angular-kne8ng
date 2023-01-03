@@ -11,16 +11,23 @@
     mat-icon-button
     *ngIf="filterControl.value"
     matTooltip="Clear"
+    matTooltipPosition="after"
     (click)="onFilterReset()"
   >
     <mat-icon>close</mat-icon>
   </button>
   <mat-error *ngIf="filterControl.hasError('minlength')">
-    At least {{ filterMinLen }} characters <strong>required.</strong>
+    Filter not applied. Needs at least {{ FILTER_MIN_LEN }} characters.
   </mat-error>
 </mat-form-field>
 
-<button mat-icon-button color="primary" matTooltip="Add" (click)="onAdd()">
+<button
+  mat-icon-button
+  color="primary"
+  matTooltip="Add"
+  matTooltipPosition="after"
+  (click)="onAdd()"
+>
   <mat-icon>add</mat-icon>
 </button>
 
@@ -45,7 +52,12 @@
     <td mat-cell *matCellDef="let row; let i = index">
       <div class="flex-container">
         <div class="flex-item">
-          <button mat-mini-fab matTooltip="Update" (click)="onUpdate(i)">
+          <button
+            mat-mini-fab
+            matTooltip="Update"
+            matTooltipPosition="after"
+            (click)="onUpdate(i)"
+          >
             <mat-icon>update</mat-icon>
           </button>
         </div>
@@ -53,6 +65,7 @@
           <button
             mat-mini-fab
             matTooltip="Undo"
+            matTooltipPosition="after"
             *ngSwitchCase="'added'"
             (click)="onRemove(i)"
           >
@@ -61,6 +74,7 @@
           <button
             mat-mini-fab
             matTooltip="Delete"
+            matTooltipPosition="after"
             *ngSwitchCase="'altered'"
             (click)="onRevert(i)"
           >
@@ -78,12 +92,11 @@
 
 <mat-paginator
   #paginator
-  (page)="onPageUpdate($event)"
   [length]="rowLength"
   [pageSize]="pageSize"
-  [pageSizeOptions]="pageSizeOptions"
+  [pageSizeOptions]="PAGE_SIZE_OPTIONS"
   [pageIndex]="pageIndex"
-  showFirstLastButtons="true"
-  aria-label="Select page"
+  (page)="onPageUpdate($event)"
+  showFirstLastButtons
 >
 </mat-paginator>
